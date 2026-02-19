@@ -20,6 +20,9 @@ class Comment(models.Model):
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.body
+
     class Meta:
         ordering = ['-created']
 
