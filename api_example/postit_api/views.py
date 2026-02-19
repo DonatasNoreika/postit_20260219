@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import PostSerializer
+from .serializers import PostSerializer, CommentSerializer
 from .models import Post, Comment, PostLike, CommentLike
 from rest_framework import generics, permissions
 from rest_framework.exceptions import ValidationError
@@ -32,3 +32,12 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
             return self.destroy(request, *args, **kwargs)
         else:
             raise ValidationError('Negalima trinti svetimų pranešimų!')
+
+
+class CommentList(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
