@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from .serializers import (PostSerializer,
                           CommentSerializer,
-                          PostLikeSerializer)
+                          PostLikeSerializer,
+                          UserSerializer)
 from .models import Post, Comment, PostLike, CommentLike
 from rest_framework import generics, permissions, mixins, status
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
-
+from django.contrib.auth.models import User
 
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
@@ -93,3 +94,9 @@ class PostLikeCreate(generics.ListCreateAPIView, mixins.DestroyModelMixin):
             raise ValidationError('Jūs jau palikote patiktuką šiam pranešimui!')
         post = Post.objects.get(pk=self.kwargs['pk'])
         serializer.save(user=self.request.user, post=post)
+
+
+class UserCreate(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.AllowAny, )
