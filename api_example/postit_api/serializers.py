@@ -26,3 +26,9 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'user', 'user_id', 'title', 'body', 'created', 'comment_count', 'comments']
+
+class PostLikeSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    class Meta:
+        model = PostLike
+        fields = ['id', 'user']
