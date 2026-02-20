@@ -3,7 +3,8 @@ from .serializers import (PostSerializer,
                           CommentSerializer,
                           PostLikeSerializer)
 from .models import Post, Comment, PostLike, CommentLike
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, mixins, status
+from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
 
@@ -71,9 +72,16 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
             raise ValidationError('Negalima koreguoti svetimų komentarų!')
 
 
-class PostLikeCreate(generics.ListCreateAPIView):
+class PostLikeCreate(generics.ListCreateAPIView, mixins.DestroyModelMixin):
     serializer_class = PostLikeSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        if self.get_queryset().exists():
+            self.get_queryset().delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            raise ValidationError('Jūs nepalikote patiktuko po šiuo pranešimu!')
 
     def get_queryset(self):
         user = self.request.user
